@@ -38,10 +38,10 @@ public class DatabaseConnection {
                     + "inner join orderinformation on orderinformation.ordersid=orders.id "
                     + "inner join shoes on shoes.id=orderinformation.shoeid "
                     + "inner join model on model.id=shoes.modelid "
-                    + "where customers.firstname=? group by customers.firstname;");
-            System.out.println("Ange kundens namn: ");
-            String namn = sc.next();
-            prepStatement.setString(1, namn);
+                    + "where customers.id=? group by customers.id;");
+            System.out.println("Ange kundens id: ");
+            int id = sc.nextInt();
+            prepStatement.setInt(1, id);
             ResultSet rs = prepStatement.executeQuery();
 
             while (rs.next()) {
