@@ -1,5 +1,8 @@
 package shoedatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Customer {
 
     private int id;
@@ -8,9 +11,19 @@ public class Customer {
     private String address;
     private String borough;
     private String postalCode;
+    private List<Order> orderList = new ArrayList<>();
+    private double totalSum;
 
     Customer(String firstname) {
-        this.firstName=firstname;
+        this.firstName = firstname;
+    }
+
+    Customer(String name, String surname, int id, double totalSum) {
+        this.firstName = name;
+        this.lastName=surname;
+        this.id = id;
+        this.orderList.add(new Order(totalSum));
+
     }
 
     public int getId() {
@@ -59,6 +72,22 @@ public class Customer {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public List<Order> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(List<Order> orderList) {
+        this.orderList = orderList;
+    }
+
+    public double getTotalSum() {
+        return totalSum;
+    }
+
+    public void setTotalSum(double totalSum) {
+        this.totalSum = totalSum;
     }
 
 }

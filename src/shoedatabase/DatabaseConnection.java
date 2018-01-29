@@ -1,17 +1,18 @@
 package shoedatabase;
 
 import java.sql.*;
-import javax.sql.*;
 import java.io.*;
 import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DatabaseConnection {
 
     private Properties p = new Properties();
+    List<Customer> customerList = new ArrayList<>();
 
     public DatabaseConnection() {
         try {
@@ -25,38 +26,64 @@ public class DatabaseConnection {
         }
     }
 
-    public void getCustomerAmounts() {
+    public void loadAllCustomers() {
         try (Connection con = DriverManager.getConnection(
-           p.getProperty("ConnectionString"), 
-                p.getProperty("name"), 
+                p.getProperty("ConnectionString"),
+                p.getProperty("name"),
                 p.getProperty("password")
-        );
-                Scanner sc = new Scanner(System.in)) {
-            PreparedStatement prepStatement = con.prepareStatement
-        ("Select customers.firstname, sum(model.price*quantity) from customers "
+        );) {
+
+            Statement stmt = con.createStatement();
+            ResultSet r = stmt.executeQuery("Select customers.firstname, customers.id, "
+                    + " customers.surname, sum(model.price*quantity) from customers "
                     + "left join orders on orders.customerid=customers.id "
-                    + "inner join orderinformation on orderinformation.ordersid=orders.id "
-                    + "inner join shoes on shoes.id=orderinformation.shoeid "
-                    + "inner join model on model.id=shoes.modelid "
-                    + "where customers.id=? group by customers.id;");
-            System.out.println("Ange kundens id: ");
-            int id = sc.nextInt();
-            prepStatement.setInt(1, id);
-            ResultSet rs = prepStatement.executeQuery();
+                    + "left join orderinformation on orderinformation.ordersid=orders.id "
+                    + "left join shoes on shoes.id=orderinformation.shoeid "
+                    + "left join model on model.id=shoes.modelid "
+                    + "group by customers.id");
 
-            while (rs.next()) {
-                String customer = rs.getString("customers.firstname");
-                Customer shoeCustomer = new Customer(customer);
-                double sum = rs.getDouble("sum(model.price*quantity)");
-
-                System.out.println("Kund: " + shoeCustomer.getFirstName()
-                        + "\nSumma: " + sum);
+            while (r.next()) {
+                Customer temp = new Customer(r.getString("customers.firstname"),
+                        r.getString("customers.surname"),
+                        r.getInt("customers.id"),
+                        r.getDouble("sum(model.price*quantity)"));
+                customerList.add(temp);
             }
-
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    void printCustomer(String in) {
+        int id = Integer.parseInt(in);
+        customerList.forEach(cus -> {
+            if (cus.getId() == id) {
+                System.out.println("Namn: " + cus.getFirstName() + " " + cus.getLastName()
+                        + ", Total summa: " + 
+                        (cus.getOrderList().stream().mapToDouble(Order::getTotalSum).sum()));
+    }
+
+    });
 
     }
 
+    public void printAllCustomers() {
+        customerList.forEach(cus -> {
+            System.out.println("Namn: " + cus.getFirstName() + " " + cus.getLastName()
+                    + ", Total summa: " + (cus.getOrderList().stream().mapToDouble(Order::getTotalSum).sum()));
+
+        });
+    }
+
+    public boolean isCustomerId(String in) {
+        try {
+            int idTest = Integer.parseInt(in);
+            if (customerList.stream().anyMatch((c) -> (c.getId() == idTest))) {
+                return true;
+            }
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return false;
+    }
 }
