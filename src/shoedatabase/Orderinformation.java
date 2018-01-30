@@ -4,6 +4,7 @@ public class Orderinformation {
     private Order order;
     private int quantity;
     private Shoe shoe;
+    private int id;
 
     public Order getOrder() {
         return order;
@@ -27,5 +28,13 @@ public class Orderinformation {
 
     public void setShoe(Shoe shoe) {
         this.shoe = shoe;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
