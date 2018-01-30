@@ -7,7 +7,6 @@ import java.util.List;
 public class Order {
     private int id;
     private Customer customer;
-    private List<Shoe> shoeList = new ArrayList<>();
     private Timestamp date;
     private double totalSum;
 
@@ -29,14 +28,6 @@ public class Order {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
-    }
-
-    public List<Shoe> getShoeList() {
-        return shoeList;
-    }
-
-    public void setShoeList(List<Shoe> shoeList) {
-        this.shoeList = shoeList;
     }
 
     public Timestamp getDate() {
